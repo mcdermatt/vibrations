@@ -1,3 +1,4 @@
+import matplotlib as mpl
 from mpl_toolkits.mplot3d import Axes3D
 import matplotlib.pyplot as plt
 from matplotlib import cm
@@ -18,37 +19,31 @@ import numpy as np
 fig = plt.figure()
 ax = fig.gca(projection='3d')
 
-#plot multiple
-# fig2 = plt.figure()
-# ax2 = fig2.gca(projection='3d')
-
-# Lambda- represents
-# X = 2mg/(k*l0) 
-X = np.arange(0, 500, 5) #evenly spaced values from 0 to 5
+# Hbar- represents dimensionless height
+# Hbar = H/L0
+Hbar = np.arange(0, 20, 0.2) #evenly spaced values from 0 to 5
 
 #Lbar- represents dimensionless length
 #lbar = ((L/L0)-1)^2
-lbar = np.arange(0, 5, 0.05)
-X, lbar = np.meshgrid(X, lbar)
-
-H = 1
+lbar = np.arange(0, 500, 5)
+Hbar, lbar = np.meshgrid(Hbar, lbar)
 
 #equation
-V = np.sqrt((lbar-1)**2 + lbar*H - (np.sqrt(lbar*lbar-H*H)-1)**2)
-#Z = 1
+lam = ((lbar-1)**2-(np.sqrt(abs(lbar**2-Hbar**2))**2) / (-1*Hbar))
 
 # Plot the surface.
-surf = ax.plot_surface(X, lbar, V, cmap=cm.coolwarm, linewidth=0, antialiased=False)
+cmap = mpl.cm.coolwarm
+norm = mpl.colors.Normalize(vmin=0,vmax=500000)
+surf = ax.plot_surface(Hbar, lbar, lam, cmap=cmap, norm=norm, linewidth=0, antialiased=False)
 
 # Customize the z axis.
 #ax.set_zlim(-1.01, 1.01)
-ax.set_xlabel("lambda")
+ax.set_xlabel("Hbar")
 ax.set_ylabel("Lbar")
-ax.zaxis.set_major_locator(LinearLocator(10))
-ax.zaxis.set_major_formatter(FormatStrFormatter('%.02f'))
+ax.set_zlabel("lambda")
 
 # Add a color bar which maps values to colors.
-fig.colorbar(surf, shrink=0.5, aspect=5)
+fig.colorbar(surf, shrink=10, aspect=5,norm=norm,cmap=cmap)
 
 
 plt.title('Case of No Friction')
